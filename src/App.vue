@@ -109,23 +109,38 @@ export default {
       event.preventDefault();
       console.log("loginForm: ", loginForm)
 
-      ChatapiService.register(loginForm).then(
-        (response)=>{
-          console.log("response: ", response)        
-        }
-      ).catch(
-      (error)=>{
-        console.log("error",error)
+      let apiData = {
+        'email':loginForm.email,
+        'full_name':loginForm.fullName,
+        'phone_number':loginForm.phoneNumber,
       }
-      )
 
+      ChatapiService.register(apiData).then(
+        (response)=>{
+          console.log("response: ", response)  
+                
+          localStorage.setItem('userToken', response.data.token);
 
-      this.user = { 
+          this.user = { 
           fullName:loginForm.fullName, 
           email:loginForm.email, 
           phoneNumber:loginForm.phoneNumber, 
           id: uid() };
           this.initChat();
+  
+        }
+      ).catch(
+      (error)=>{
+        console.log("error",error)
+
+        Vue.$toast.open({
+          message: 'Something went wrong!',
+          type: 'error',
+          position: 'top'
+          // all of other options may go here
+      });
+      }
+      )
           
     },
 

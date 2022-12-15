@@ -3,7 +3,7 @@ import ApiService from "./api.service";
 const ChatapiService = {
   // users/register
   async register(data) {
-    return await ApiService.post("/users/register/", data);
+    return await ApiService.post("/users/register", data);
   },
   // flights/available-flights
 

@@ -23,7 +23,7 @@ const ApiService = {
   get(path,qParams={}) {
     let header = {};
     if (localStorage.getItem("userToken")) {
-      header["Authorization"] = `Bearer ${localStorage.getItem("userToken")}`;
+      header["Authorization"] = `${localStorage.getItem("userToken")}`;
     }
 
     return Vue.axios.get(path, { headers: header, params: qParams });
@@ -32,7 +32,7 @@ const ApiService = {
   post(path, params) {
     let header = {};
     if (localStorage.getItem("userToken")) {
-      header["Authorization"] = `Bearer ${localStorage.getItem("userToken")}`;
+      header["Authorization"] = `${localStorage.getItem("userToken")}`;
     }
     return Vue.axios.post(path, params, { headers: header });
   },
@@ -40,14 +40,14 @@ const ApiService = {
   put(path, data) {
     let header = {};
     if (localStorage.getItem("userToken")) {
-      header["Authorization"] = `Bearer ${localStorage.getItem("userToken")}`;
+      header["Authorization"] = `${localStorage.getItem("userToken")}`;
     }
     return Vue.axios.put(path, data, { headers: header });
   },
   patch(path, data) {
     let header = {};
     if (localStorage.getItem("userToken")) {
-      header["Authorization"] = `Bearer ${localStorage.getItem("userToken")}`;
+      header["Authorization"] = `${localStorage.getItem("userToken")}`;
     }
     return Vue.axios.patch(path, data, { headers: header });
   },
@@ -55,7 +55,7 @@ const ApiService = {
   update(path, slug, params) {
     let header = {};
     if (localStorage.getItem("userToken")) {
-      header["Authorization"] = `Bearer ${localStorage.getItem("userToken")}`;
+      header["Authorization"] = `${localStorage.getItem("userToken")}`;
     }
     return Vue.axios.put(`${path}/${slug}`, params, { headers: header });
   },
@@ -63,7 +63,7 @@ const ApiService = {
   delete(path) {
     let header = {};
     if (localStorage.getItem("userToken")) {
-      header["Authorization"] = `Bearer ${localStorage.getItem("userToken")}`;
+      header["Authorization"] = `${localStorage.getItem("userToken")}`;
     }
     return Vue.axios.delete(path, { headers: header });
   },
