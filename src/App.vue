@@ -175,11 +175,9 @@ export default {
       })
       this.scrollToBotton()
 
-      if(this.currentState == this.botStatus.ASKING_BOOKING_DATE){
-        
+      if(this.currentState == this.botStatus.ASKING_BOOKING_DATE){        
 
         this.bookFlightForm.date = text;
-        
        this.qParams=this.bookFlightForm
        console.log("this.qParams>>> ",this.qParams);
 

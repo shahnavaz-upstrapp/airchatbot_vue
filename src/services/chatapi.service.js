@@ -9,7 +9,21 @@ const ChatapiService = {
 
   async availableFlights(qParams={}) {
       return await ApiService.get("/flights/available-flights", qParams);
-    }
+    },
+
+  // get booking detials flight_bookings/my-bookings/BKA34561
+
+  async getFlightByID(id) {
+    return await ApiService.get(`/flight_bookings/my-bookings/${id}`);
+  },
+
+  //  /flight_bookings/cancel
+  async flightCancel(data) {
+    return await ApiService.post("/flight_bookings/cancel/", data);
+  },
+
+
+
   
   // async forgotPassword(data) {
   //   return await ApiService.post("/auth/forgot-password", data);
