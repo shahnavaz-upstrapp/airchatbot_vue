@@ -2,7 +2,7 @@ import ApiService from "./api.service";
 
 const ChatapiService = {
   async register(data) {
-    return await ApiService.post("/users/register/", data);
+    return await ApiService.post("/users/register", data);
   },
   async forgotPassword(data) {
     return await ApiService.post("/auth/forgot-password", data);

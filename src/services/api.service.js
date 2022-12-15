@@ -4,7 +4,7 @@ import VueAxios from "vue-axios";
 // import setup from "./interceptors";
 // import { API_BASE_URL } from "@/config/constant";
 
-const API_BASE_URL = "http://192.168.1.19:8000/";
+const API_BASE_URL = "https://backend.airchatboat.devstrapp.com/";
 // let authorizationToken = localStorage.getItem('userToken');
 // console.log("authorizationToken from the service", authorizationToken)
 // process.env.API_BASE_URL;
