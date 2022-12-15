@@ -66,26 +66,26 @@ export default {
               ],
 
     departureOptions:[
-        {key: '1', label:'CPT CAPETOWN'},
-        {key: '2', label:'FRW FRANCISTOWN'},
-        {key: '3', label:'GBE GABARONE'},
-        {key: '4', label:'HRE HARARE'},
-        {key: '5', label:'JNB JOHANNESBURG'},
-        {key: '6', label:'BBK KASANE'},
-        {key: '7', label:'LUN LUKASA'},
-        {key: '8', label:'MUB  MAUN'},
+        {key: '1', label:'CPT CAPETOWN', location:'CAPETOWN'},
+        {key: '2', label:'FRW FRANCISTOWN', location:'FRANCISTOWN'},
+        {key: '3', label:'GBE GABARONE', location:'GABARONE'},
+        {key: '4', label:'HRE HARARE', location:'HARARE'},
+        {key: '5', label:'JNB JOHANNESBURG', location:'JOHANNESBURG'},
+        {key: '6', label:'BBK KASANE', location:'KASANE'},
+        {key: '7', label:'LUN LUKASA', location:'LUKASA'},
+        {key: '8', label:'MUB  MAUN', location:'MAUN'},
 
     ],
 
     arrivalOptions:[
-        {key: '1', label:'CPT CAPETOWN'},
-        {key: '2', label:'FRW FRANCISTOWN'},
-        {key: '3', label:'GBE GABARONE'},
-        {key: '4', label:'HRE HARARE'},
-        {key: '5', label:'JNB JOHANNESBURG'},
-        {key: '6', label:'BBK KASANE'},
-        {key: '7', label:'LUN LUKASA'},
-        {key: '8', label:'MUB  MAUN'},
+        {key: '1', label:'CPT CAPETOWN', location:'CAPETOWN'},
+        {key: '2', label:'FRW FRANCISTOWN', location:'FRANCISTOWN'},
+        {key: '3', label:'GBE GABARONE', location:'GABARONE'},
+        {key: '4', label:'HRE HARARE', location:'HARARE'},
+        {key: '5', label:'JNB JOHANNESBURG', location:'JOHANNESBURG'},
+        {key: '6', label:'BBK KASANE', location:'KASANE'},
+        {key: '7', label:'LUN LUKASA', location:'LUKASA'},
+        {key: '8', label:'MUB  MAUN', location:'MAUN'},
     ],
 
     currentState:null,
@@ -95,6 +95,7 @@ export default {
       departure:null,
       arrival:null,
       date:null,
+      flight_id: null,
     }
 
   }),
@@ -194,40 +195,95 @@ export default {
 
         this.bookFlightForm.date = text;
 
-        this.qParams=this.bookFlightForm
+        this.qParams=  {}
+        this.qParams['departure'] = this.bookFlightForm.departure
+        this.qParams['arrival'] = this.bookFlightForm.arrival
+        this.qParams['from_date'] = this.bookFlightForm.date
+
+          this.bookFlightForm
         console.log("this.qParams>>> ",this.qParams);
 
         setTimeout(() => { 
           console.log("Delayed for 1 second.");
         }, 5000)
 
-      await ChatapiService.availableFlights(this.qParams).then((response) => {
-        console.log("response>>> ",response);
+          await ChatapiService.availableFlights(this.qParams).then((response) => {
+            console.log("response>>> ",response);
 
-        
-      }).catch((error => {
-        console.log("error>>> ", error);
-      }))
+            let f_actions = []
 
-        this.messages.push({
-          id: this.getMessageId(),
-          isMine: false,
-          text:`${this.bookFlightForm.departure} to ${this.bookFlightForm.arrival} available flights on ${this.bookFlightForm.date}` ,
-          author: "Bot",
-          actions:[
-            {key:'A3456', label:'Airline: AIR Airlines - Flight Number: A3456 ', 'showBookButton':true, bookingID:1},
-            {key:'J3456', label:'Airline: JET Airlines - Flight Number: J3456 ', 'showBookButton':true, bookingID:2},
-          ]
-        })
+            response.data.flight_list.forEach(ele => {
+              f_actions.push(
+                { key:ele.id,
+                  showBookButton: true,
+                  bookingID: ele.id,
+                  label: `Airline: ${ele.airline_name} - Flight Number: ${ele.flight_number} - Arrival Time: ${ele.arrival_time} - Departure Time: ${ele.departure_time} `
+                 }
+              )
+              
+            });
 
-        this.scrollToBotton()
-        this.currentState = this.botStatus.SHOWING_AVAILABLE_FLIGHTS;
+            if(f_actions.length){
+
+              this.messages.push({
+              id: this.getMessageId(),
+              isMine: false,
+              text:`${this.bookFlightForm.departure} to ${this.bookFlightForm.arrival} available flights on ${this.bookFlightForm.date}` ,
+              author: "Bot",
+              actions:f_actions
+            })
+
+            this.scrollToBotton()
+            this.currentState = this.botStatus.SHOWING_AVAILABLE_FLIGHTS;
+
+            }
+            else{
+              this.messages.push({
+              id: this.getMessageId(),
+              isMine: false,
+              text:`No flights found for selected inputs.` ,
+              author: "Bot",
+            })
+
+            this.scrollToBotton()
+            this.currentState = this.botStatus.SHOWING_AVAILABLE_FLIGHTS;
+
+            setTimeout(()=> {
+
+            this.messages.push({
+            id: this.getMessageId(),
+            isMine: false,
+            text:'Do you need more help? ' ,
+            author: "Bot",
+            actions :this.botActions
+            })
+
+            this.currentState = this.botStatus.HOME_PAGE
+            this.scrollToBotton()
+            }, 3000);
+            }
+
+
+
+          }).catch((error => {
+            console.log("error>>> ", error);
+
+            this.messages.push({
+            id: this.getMessageId(),
+            isMine: false,
+            text:'Please enter valid Date. ' ,
+            author: "Bot",
+            })
+            this.scrollToBotton()
+
+          }))
         }
 
     },
 
 
     async onActionSelectEvent(event, selectedAction){
+      console.log("selectedAction: ", selectedAction);
 
       if(this.currentState == this.botStatus.HOME_PAGE){
 
@@ -283,28 +339,69 @@ export default {
           console.log("Delayed for 1 second.");
         }, 1000)
 
-        await ChatapiService.availableFlights(this.qParams).then((response) => {
-        console.log("response>>> ",response);
+          await ChatapiService.getMyBookingFlights(this.qParams).then((response) => {
+          console.log("response>>> ",response);
+          
+          let f_list = []
 
-        
-      }).catch((error => {
-        console.log("error>>> ", error);
-      }))
+          response.data.booking_list.forEach(ele => {
 
+            f_list.push({
+              key:ele.booking_id,
+              bookingID:ele.booking_id,
+              showCheckStatusButton: true,
+              label: `Booking ID: ${ele.booking_id} - Flight Number: ${ele.flight.flight_number} - Airline: ${ele.flight.airline_name}`
+            })
+            
+          });
 
-          this.messages.push({
+          if(f_list.length){
+            this.messages.push({
           id: this.getMessageId(),
           isMine: false,
           text:'Your booked flights:' ,
           author: "Bot",
-          actions:[
-            {key:'A3456', label:'Airline: AIR Airlines - Flight Number: A3456 ', 'showCheckStatusButton':true, bookingID:1},
-            {key:'J3456', label:'Airline: JET Airlines - Flight Number: J3456 ', 'showCheckStatusButton':true, bookingID:2},
-          ]
+          actions:f_list
           })
 
           this.scrollToBotton()
           this.currentState = this.botStatus.SHOWING_LIST_FOR_FLIGHT_STATUS;
+
+          }
+
+          else{
+              this.messages.push({
+              id: this.getMessageId(),
+              isMine: false,
+              text:`No flights found for selected inputs.` ,
+              author: "Bot",
+            })
+
+            this.scrollToBotton()
+            this.currentState = this.botStatus.SHOWING_LIST_FOR_FLIGHT_STATUS;
+
+            setTimeout(()=> {
+
+            this.messages.push({
+            id: this.getMessageId(),
+            isMine: false,
+            text:'Do you need more help? ' ,
+            author: "Bot",
+            actions :this.botActions
+            })
+
+            this.currentState = this.botStatus.HOME_PAGE
+            this.scrollToBotton()
+            }, 3000);
+            }
+
+
+
+
+          
+          }).catch((error => {
+            console.log("error>>> ", error);
+          }))
 
           }
 
@@ -339,7 +436,7 @@ export default {
         }
 
        else if(this.currentState == this.botStatus.ASKING_BOOKING_DIPARTURE){
-        this.bookFlightForm.departure = selectedAction.label;
+        this.bookFlightForm.departure = selectedAction.location;
         this.messages.push({
             id: this.getMessageId(),
             isMine: false,
@@ -354,7 +451,7 @@ export default {
       }
 
       else if(this.currentState == this.botStatus.ASKING_BOOKING_ARRIVAL){
-        this.bookFlightForm.arrival = selectedAction.label;
+        this.bookFlightForm.arrival = selectedAction.location;
 
           this.messages.push({
             id: this.getMessageId(),
@@ -369,6 +466,22 @@ export default {
       
       else if(this.currentState == this.botStatus.SHOWING_AVAILABLE_FLIGHTS){
         window.open("https://airbotswana.co.bw/", '_blank');
+
+
+        this.bookFlightForm.arrival = selectedAction.boo;
+
+
+        let apiData = {}
+        apiData['flight_id'] = selectedAction.bookingID
+        apiData['booking_date'] = this.bookFlightForm.date
+
+        await ChatapiService.bookFlight(apiData).then((response) => {
+          console.log("response>>> ",response);
+        
+          }).catch((error => {
+            console.log("error>>> ", error);
+          }))
+
 
         this.messages.push({
             id: this.getMessageId(),
@@ -400,22 +513,13 @@ export default {
         // let in this Case "id = this.currentState "
 
            await ChatapiService.getFlightByID(selectedAction.bookingID).then((response) => {
-            setTimeout(() => { 
-              console.log("Delayed for 1 second.");
-            }, 5000)
-
+            
             console.log("response>>> ",response);
-
-            }).catch((error) => {
-              console.log("error>>> ,", error);
-            })
-
-        
-
-        this.messages.push({
+            let message = `Flight #${response.data.booking_details.flight.flight_number} from ${response.data.booking_details.flight.origin_location} to ${response.data.booking_details.flight.destination_location} is ${response.data.booking_details.flight.status_message}` 
+            this.messages.push({
             id: this.getMessageId(),
             isMine: false,
-            text:'Flight # 1234 from Gaborone to Francistown is on time' ,
+            text:message ,
             author: "Bot",
           })
 
@@ -435,6 +539,10 @@ export default {
           this.scrollToBotton()
         }, 3000);
 
+
+            }).catch((error) => {
+              console.log("error>>> ,", error);
+            })
 
       }
 

@@ -17,13 +17,19 @@ const ChatapiService = {
     return await ApiService.get(`/flight_bookings/my-bookings/${id}`);
   },
 
+  async getMyBookingFlights(qParams={}) {
+    return await ApiService.get("/flight_bookings/my-bookings", qParams);
+  },
+
   //  /flight_bookings/cancel
   async flightCancel(data) {
     return await ApiService.post("/flight_bookings/cancel/", data);
   },
 
 
-
+  async bookFlight(data) {
+    return await ApiService.post("/flight_bookings/add", data);
+  },
   
   
   // async checkResetPasswordToken(data) {
