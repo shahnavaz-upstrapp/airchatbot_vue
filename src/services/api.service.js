@@ -18,27 +18,54 @@ const ApiService = {
 //     setup();
   },
 
-  get(path) {
-    return Vue.axios.get(path);
+  // All Type API ...
+
+  get(path,qParams={}) {
+    let header = {};
+    if (localStorage.getItem("userToken")) {
+      header["Authorization"] = `Bearer ${localStorage.getItem("userToken")}`;
+    }
+
+    return Vue.axios.get(path, { headers: header, params: qParams });
   },
 
   post(path, params) {
-    return Vue.axios.post(path, params);
+    let header = {};
+    if (localStorage.getItem("userToken")) {
+      header["Authorization"] = `Bearer ${localStorage.getItem("userToken")}`;
+    }
+    return Vue.axios.post(path, params, { headers: header });
   },
 
   put(path, data) {
-    return Vue.axios.put(path, data);
+    let header = {};
+    if (localStorage.getItem("userToken")) {
+      header["Authorization"] = `Bearer ${localStorage.getItem("userToken")}`;
+    }
+    return Vue.axios.put(path, data, { headers: header });
   },
   patch(path, data) {
-    return Vue.axios.patch(path, data);
+    let header = {};
+    if (localStorage.getItem("userToken")) {
+      header["Authorization"] = `Bearer ${localStorage.getItem("userToken")}`;
+    }
+    return Vue.axios.patch(path, data, { headers: header });
   },
 
   update(path, slug, params) {
-    return Vue.axios.put(`${path}/${slug}`, params);
+    let header = {};
+    if (localStorage.getItem("userToken")) {
+      header["Authorization"] = `Bearer ${localStorage.getItem("userToken")}`;
+    }
+    return Vue.axios.put(`${path}/${slug}`, params, { headers: header });
   },
 
   delete(path) {
-    return Vue.axios.delete(path);
+    let header = {};
+    if (localStorage.getItem("userToken")) {
+      header["Authorization"] = `Bearer ${localStorage.getItem("userToken")}`;
+    }
+    return Vue.axios.delete(path, { headers: header });
   },
 
   // delete(path) {

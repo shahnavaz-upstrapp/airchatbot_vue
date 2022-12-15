@@ -37,6 +37,7 @@ import CONSTANTS from "../constants";
 
 import ChatapiService from "@/services/chatapi.service";
 
+
 export default {
   name: 'App',
 
@@ -48,7 +49,11 @@ export default {
     Message
   },
 
+
   data: () => ({
+
+    qParams:{},
+    
     user: undefined,
     messages: [],
     botActions:[{key: 'a', label:'Book a Flight '},
@@ -110,7 +115,7 @@ export default {
         }
       ).catch(
       (error)=>{
-        console.log("error")
+        console.log("error",error)
       }
       )
 
@@ -146,8 +151,10 @@ export default {
           element.scrollTo({ behavior: 'smooth', top: element.scrollHeight });
         });
     },
+
+
     // This method will be called when a new message is sent
-    onSubmit(event, text) {
+   async onSubmit(event, text) {
       event.preventDefault();
       console.log("text: ", text);
       console.log("this.currentState: ", this.currentState)
@@ -158,6 +165,7 @@ export default {
       //   uid: this.user?.id,
       //   author: this.user?.name
       // });
+     
 
       this.messages.push({
         id: this.getMessageId(),
@@ -168,8 +176,20 @@ export default {
       this.scrollToBotton()
 
       if(this.currentState == this.botStatus.ASKING_BOOKING_DATE){
+        
 
         this.bookFlightForm.date = text;
+        
+       this.qParams=this.bookFlightForm
+       console.log("this.qParams>>> ",this.qParams);
+
+      await ChatapiService.availableFlights(this.qParams).then((response) => {
+        console.log("response>>> ",response);
+
+        
+      }).catch((error => {
+        console.log("error>>> ", error);
+      }))
 
         this.messages.push({
           id: this.getMessageId(),
