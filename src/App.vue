@@ -56,8 +56,9 @@ export default {
                   {key: 'c', label:'Flight Status '},
                   {key: 'd', label:'Baggage claims '},
                   {key: 'e', label:'Online Check-in '},
-                  {key: 'f', label:'My problem is not listed here '},
                   {key: 'g', label:'Book cargo '},
+                  {key: 'f', label:'My problem is not listed here '},
+
               ],
 
     departureOptions:[
@@ -177,8 +178,8 @@ export default {
           text:`${this.bookFlightForm.departure} to ${this.bookFlightForm.arrival} available flights on ${this.bookFlightForm.date}` ,
           author: "Bot",
           actions:[
-            {key:'A3456', label:'Airline: AIR Airlines - Flight Number: A3456 ', 'showBookButton':true},
-            {key:'J3456', label:'Airline: JET Airlines - Flight Number: J3456 ', 'showBookButton':true},
+            {key:'A3456', label:'Airline: AIR Airlines - Flight Number: A3456  - Arrival Time: 20:30 - Departure Time: 06:30', 'showBookButton':true},
+            {key:'J3456', label:'Airline: JET Airlines - Flight Number: J3456 - Arrival Time: 20:30 - Departure Time: 06:30', 'showBookButton':true},
           ]
         })
 
@@ -268,7 +269,7 @@ export default {
             text:'' ,
             author: "Bot",
             actions:[
-            {key:'', label:'Talk to agent?', 'showTalkToAgentButton':true},
+            {key:'', label:'Talk to agent ', 'showTalkToAgentButton':true},
           ]
           })
           this.currentState = this.botStatus.TALK_TO_AGENT;
@@ -289,7 +290,7 @@ export default {
         this.messages.push({
             id: this.getMessageId(),
             isMine: false,
-            text:'Select Arrival ?' ,
+            text:'Select Arrival:' ,
             author: "Bot",
             actions :this.arrivalOptions
 
