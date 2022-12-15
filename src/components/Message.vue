@@ -22,19 +22,50 @@
     <p v-for="(action,index) in list_items" :key='index'>
       {{ action.label }}
     </p>
+    <!-- Datepicker -->
+    <div v-if="isDateInput"  >
+      {{date}}
+      <date-picker v-model="date" valueType="format" ></date-picker>
+      <button v-on:click="selectDate()" >OK</button>
+      <!-- <date-picker valueType="format"></date-picker> -->
+      <!--  v-on:click="$emit('selectDate',date)" -->
+
+    </div>
   </div>
+  
 </template>
 
 <script>
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
+
 export default {
   name: 'Message',
+  components: {
+    DatePicker,
+  },
+  
   props: [
     'text', // Content of the message
     'author', // Author of the message
     'dark', // Background variant of the box
     'actions', // Background variant of the box
-    'list_items'
-  ]
+    'list_items',
+    'isDateInput',
+  ],
+  data(){
+    return{
+      date:'',
+      defaultDate: Date.now()
+    }
+  },
+  methods:{
+    selectDate(){
+      console.log("onDateChange from Massage Component>>>>>> ");
+      this.$emit('selectDate', this.date);
+    }
+  }
+  
 }
 </script>
 

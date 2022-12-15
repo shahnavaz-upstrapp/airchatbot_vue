@@ -10,9 +10,12 @@
           :author='message.author'
           :actions='message.actions'
           :list_items="messages.list_items"
+          :isDateInput="message.isDateInput"
+          @selectDate="onselectDateEvent"
           @onActionSelect="onActionSelectEvent"
       />
     </div>
+    
 
     <ChatBox
         class='chat-box'
@@ -46,7 +49,7 @@ export default {
   components: {
     RegisterDialog,
     ChatBox,
-    Message
+    Message,
   },
 
 
@@ -175,9 +178,10 @@ export default {
       })
       this.scrollToBotton()
 
-      if(this.currentState == this.botStatus.ASKING_BOOKING_DATE){        
-
-        this.bookFlightForm.date = text;
+      if(this.currentState == this.botStatus.ASKING_BOOKING_DATE){    
+          
+       
+        // this.bookFlightForm.date = text;
 
         this.qParams=this.bookFlightForm
         console.log("this.qParams>>> ",this.qParams);
@@ -209,6 +213,14 @@ export default {
         this.currentState = this.botStatus.SHOWING_AVAILABLE_FLIGHTS;
         }
 
+    },
+
+    onselectDateEvent(eventDate){
+      console.log("onselectDateEvent From App Component evevt>>> ",eventDate);
+
+      this.bookFlightForm.date = eventDate
+
+      // this.onActionSelectEvent();
     },
 
 
@@ -346,6 +358,8 @@ export default {
             isMine: false,
             text:'Enter Date (DD/MM/YYYY)' ,
             author: "Bot",
+            isDateInput:true
+            
           })
 
           this.scrollToBotton()
