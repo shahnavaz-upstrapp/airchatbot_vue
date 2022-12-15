@@ -193,8 +193,13 @@ export default {
       if(this.currentState == this.botStatus.ASKING_BOOKING_DATE){        
 
         this.bookFlightForm.date = text;
-       this.qParams=this.bookFlightForm
-       console.log("this.qParams>>> ",this.qParams);
+
+        this.qParams=this.bookFlightForm
+        console.log("this.qParams>>> ",this.qParams);
+
+        setTimeout(() => { 
+          console.log("Delayed for 1 second.");
+        }, 5000)
 
       await ChatapiService.availableFlights(this.qParams).then((response) => {
         console.log("response>>> ",response);
@@ -210,8 +215,8 @@ export default {
           text:`${this.bookFlightForm.departure} to ${this.bookFlightForm.arrival} available flights on ${this.bookFlightForm.date}` ,
           author: "Bot",
           actions:[
-            {key:'A3456', label:'Airline: AIR Airlines - Flight Number: A3456 ', 'showBookButton':true},
-            {key:'J3456', label:'Airline: JET Airlines - Flight Number: J3456 ', 'showBookButton':true},
+            {key:'A3456', label:'Airline: AIR Airlines - Flight Number: A3456 ', 'showBookButton':true, bookingID:1},
+            {key:'J3456', label:'Airline: JET Airlines - Flight Number: J3456 ', 'showBookButton':true, bookingID:2},
           ]
         })
 
@@ -222,7 +227,7 @@ export default {
     },
 
 
-    onActionSelectEvent(event, selectedAction){
+    async onActionSelectEvent(event, selectedAction){
 
       if(this.currentState == this.botStatus.HOME_PAGE){
 
@@ -271,14 +276,30 @@ export default {
 
         else if(action.key == 'c'){
 
+          this.qParams=this.bookFlightForm;
+        console.log("this.qParams>>> ",this.qParams);
+
+        setTimeout(() => { 
+          console.log("Delayed for 1 second.");
+        }, 1000)
+
+        await ChatapiService.availableFlights(this.qParams).then((response) => {
+        console.log("response>>> ",response);
+
+        
+      }).catch((error => {
+        console.log("error>>> ", error);
+      }))
+
+
           this.messages.push({
           id: this.getMessageId(),
           isMine: false,
           text:'Your booked flights:' ,
           author: "Bot",
           actions:[
-            {key:'A3456', label:'Airline: AIR Airlines - Flight Number: A3456 ', 'showCheckStatusButton':true},
-            {key:'J3456', label:'Airline: JET Airlines - Flight Number: J3456 ', 'showCheckStatusButton':true},
+            {key:'A3456', label:'Airline: AIR Airlines - Flight Number: A3456 ', 'showCheckStatusButton':true, bookingID:1},
+            {key:'J3456', label:'Airline: JET Airlines - Flight Number: J3456 ', 'showCheckStatusButton':true, bookingID:2},
           ]
           })
 
@@ -376,6 +397,20 @@ export default {
       }
 
       else if(this.currentState == this.botStatus.SHOWING_LIST_FOR_FLIGHT_STATUS){
+        // let in this Case "id = this.currentState "
+
+           await ChatapiService.getFlightByID(selectedAction.bookingID).then((response) => {
+            setTimeout(() => { 
+              console.log("Delayed for 1 second.");
+            }, 5000)
+
+            console.log("response>>> ",response);
+
+            }).catch((error) => {
+              console.log("error>>> ,", error);
+            })
+
+        
 
         this.messages.push({
             id: this.getMessageId(),
