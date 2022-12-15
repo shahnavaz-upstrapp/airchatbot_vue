@@ -3,8 +3,21 @@
     <h5>{{ author }}</h5>
     {{ text }}
 
-    <p v-for="(action,index) in actions" :key='index'>
-      {{ action.key }} {{ action.label }}
+    <p  class="pointer" v-on:click='$emit("onActionSelect", $event, action)'  v-for="(action,index) in actions" :key='index'>
+      ({{ index+1 }}) {{ action.label }} 
+
+      <button class="pointer" v-if="action.showBookButton">
+        Book
+      </button>
+
+      <button class="pointer" v-if="action.showCheckStatusButton">
+        Status
+      </button>
+
+      <button class="pointer" v-if="action.showTalkToAgentButton">
+        Click Here
+      </button>
+
     </p>
     <p v-for="(action,index) in list_items" :key='index'>
       {{ action.label }}
@@ -40,4 +53,7 @@ export default {
 h5 {
   margin: 0 0 .5rem 0;
 }
+
+.pointer {cursor: pointer;}
+
 </style>
