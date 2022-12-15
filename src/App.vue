@@ -374,7 +374,7 @@ export default {
               this.messages.push({
               id: this.getMessageId(),
               isMine: false,
-              text:`No flights found for selected inputs.` ,
+              text:`No booking found.` ,
               author: "Bot",
             })
 
