@@ -1,28 +1,22 @@
 <template>
-  <div class='app'>
-    <div ref='messages' class='messages'>
+  <div class="app">
+    <div ref="messages" class="messages">
       <Message
-          v-for='message in messages'
-          :key='message.id'
-          :class='["message", { right: message.isMine }]'
-          :dark='message.isMine'
-          :text='message.text'
-          :author='message.author'
-          :actions='message.actions'
-          :list_items="messages.list_items"
-          @onActionSelect="onActionSelectEvent"
+        v-for="message in messages"
+        :key="message.id"
+        :class="['message', { right: message.isMine }]"
+        :dark="message.isMine"
+        :text="message.text"
+        :author="message.author"
+        :actions="message.actions"
+        :list_items="messages.list_items"
+        @onActionSelect="onActionSelectEvent"
       />
     </div>
 
-    <ChatBox
-        class='chat-box'
-        @submit='onSubmit'
-    />
+    <ChatBox class="chat-box" @submit="onSubmit" />
 
-    <RegisterDialog
-        v-if='!user'
-        @submit='onRegister'
-    />
+    <RegisterDialog v-if="!user" @submit="onRegister" />
   </div>
 </template>
 
@@ -31,400 +25,369 @@ import Message from "@/components/Message";
 import ChatBox from "@/components/ChatBox";
 // import { listenChat, sendMessage } from "@/core/Firebase.ts";
 import RegisterDialog from "@/components/RegisterDialog";
-import { v1 as uid } from 'uuid';
+import { v1 as uid } from "uuid";
 import Vue from "vue";
 import CONSTANTS from "../constants";
 
 import ChatapiService from "@/services/chatapi.service";
 
-
 export default {
-  name: 'App',
+  name: "App",
 
   // Here we register the components which
   // we are going to use in the template
   components: {
     RegisterDialog,
     ChatBox,
-    Message
+    Message,
   },
 
-
   data: () => ({
+    qParams: {},
 
-    qParams:{},
-    
     user: undefined,
     messages: [],
-    botActions:[{key: 'a', label:'Book a Flight '},
-                  {key: 'b', label:'Modify a current Booking '},
-                  {key: 'c', label:'Flight Status '},
-                  {key: 'd', label:'Baggage claims '},
-                  {key: 'e', label:'Online Check-in '},
-                  {key: 'f', label:'My problem is not listed here '},
-                  {key: 'g', label:'Book cargo '},
-              ],
-
-    departureOptions:[
-        {key: '1', label:'CPT CAPETOWN'},
-        {key: '2', label:'FRW FRANCISTOWN'},
-        {key: '3', label:'GBE GABARONE'},
-        {key: '4', label:'HRE HARARE'},
-        {key: '5', label:'JNB JOHANNESBURG'},
-        {key: '6', label:'BBK KASANE'},
-        {key: '7', label:'LUN LUKASA'},
-        {key: '8', label:'MUB  MAUN'},
-
+    botActions: [
+      { key: "a", label: "Book a Flight " },
+      { key: "b", label: "Modify a current Booking " },
+      { key: "c", label: "Flight Status " },
+      { key: "d", label: "Baggage claims " },
+      { key: "e", label: "Online Check-in " },
+      { key: "f", label: "My problem is not listed here " },
+      { key: "g", label: "Book cargo " },
     ],
 
-    arrivalOptions:[
-        {key: '1', label:'CPT CAPETOWN'},
-        {key: '2', label:'FRW FRANCISTOWN'},
-        {key: '3', label:'GBE GABARONE'},
-        {key: '4', label:'HRE HARARE'},
-        {key: '5', label:'JNB JOHANNESBURG'},
-        {key: '6', label:'BBK KASANE'},
-        {key: '7', label:'LUN LUKASA'},
-        {key: '8', label:'MUB  MAUN'},
+    departureOptions: [
+      { key: "1", label: "CPT CAPETOWN" },
+      { key: "2", label: "FRW FRANCISTOWN" },
+      { key: "3", label: "GBE GABARONE" },
+      { key: "4", label: "HRE HARARE" },
+      { key: "5", label: "JNB JOHANNESBURG" },
+      { key: "6", label: "BBK KASANE" },
+      { key: "7", label: "LUN LUKASA" },
+      { key: "8", label: "MUB  MAUN" },
     ],
 
-    currentState:null,
-    botStatus : CONSTANTS.BOT_STATUS,
+    arrivalOptions: [
+      { key: "1", label: "CPT CAPETOWN" },
+      { key: "2", label: "FRW FRANCISTOWN" },
+      { key: "3", label: "GBE GABARONE" },
+      { key: "4", label: "HRE HARARE" },
+      { key: "5", label: "JNB JOHANNESBURG" },
+      { key: "6", label: "BBK KASANE" },
+      { key: "7", label: "LUN LUKASA" },
+      { key: "8", label: "MUB  MAUN" },
+    ],
 
-    bookFlightForm:{
-      departure:null,
-      arrival:null,
-      date:null,
-    }
+    currentState: null,
+    botStatus: CONSTANTS.BOT_STATUS,
 
+    bookFlightForm: {
+      departure: null,
+      arrival: null,
+      date: null,
+    },
   }),
 
   // This is going to be called
   //  when the component gets rendered
-  created() {
-  },
+  created() {},
 
   methods: {
     onRegister(event, loginForm) {
       event.preventDefault();
-      console.log("loginForm: ", loginForm)
+      console.log("loginForm: ", loginForm);
 
-      ChatapiService.register(loginForm).then(
-        (response)=>{
-          console.log("response: ", response)        
-        }
-      ).catch(
-      (error)=>{
-        console.log("error",error)
-      }
-      )
+      ChatapiService.register(loginForm)
+        .then((response) => {
+          console.log("response: ", response);
+        })
+        .catch((error) => {
+          console.log("error", error);
+        });
 
-
-      this.user = { 
-          fullName:loginForm.fullName, 
-          email:loginForm.email, 
-          phoneNumber:loginForm.phoneNumber, 
-          id: uid() };
-          this.initChat();
-          
+      this.user = {
+        fullName: loginForm.fullName,
+        email: loginForm.email,
+        phoneNumber: loginForm.phoneNumber,
+        id: uid(),
+      };
+      this.initChat();
     },
 
-    initChat(){
+    initChat() {
       this.messages.push({
         id: this.getMessageId(),
         isMine: false,
-        text:'Hello, Greetings of the Day! What can we help you with today? ' ,
+        text: "Hello, Greetings of the Day! What can we help you with today? ",
         author: "Bot",
-        actions :this.botActions
-      })
+        actions: this.botActions,
+      });
 
-      this.currentState = this.botStatus.HOME_PAGE
+      this.currentState = this.botStatus.HOME_PAGE;
     },
 
-    getMessageId(){
-      return this.messages.length+1
+    getMessageId() {
+      return this.messages.length + 1;
     },
 
-    scrollToBotton(){
+    scrollToBotton() {
       Vue.nextTick(() => {
-          const element = this.$refs['messages'];
-          element.scrollTo({ behavior: 'smooth', top: element.scrollHeight });
-        });
+        const element = this.$refs["messages"];
+        element.scrollTo({ behavior: "smooth", top: element.scrollHeight });
+      });
     },
-
 
     // This method will be called when a new message is sent
-   async onSubmit(event, text) {
+    async onSubmit(event, text) {
       event.preventDefault();
       console.log("text: ", text);
-      console.log("this.currentState: ", this.currentState)
-      console.log("this.currentState == this.botStatus.ASKING_BOOKING_DATE: ", this.currentState == this.botStatus.ASKING_BOOKING_DATE)
+      console.log("this.currentState: ", this.currentState);
+      console.log(
+        "this.currentState == this.botStatus.ASKING_BOOKING_DATE: ",
+        this.currentState == this.botStatus.ASKING_BOOKING_DATE
+      );
 
       // sendMessage({
       //   text,
       //   uid: this.user?.id,
       //   author: this.user?.name
       // });
-     
 
       this.messages.push({
         id: this.getMessageId(),
         isMine: true,
-        text:text,
-        author: this.user?.fullName
-      })
-      this.scrollToBotton()
+        text: text,
+        author: this.user?.fullName,
+      });
+      this.scrollToBotton();
 
-      if(this.currentState == this.botStatus.ASKING_BOOKING_DATE){        
-
+      if (this.currentState == this.botStatus.ASKING_BOOKING_DATE) {
         this.bookFlightForm.date = text;
-       this.qParams=this.bookFlightForm
-       console.log("this.qParams>>> ",this.qParams);
+        this.qParams = this.bookFlightForm;
+        console.log("this.qParams>>> ", this.qParams);
 
-      await ChatapiService.availableFlights(this.qParams).then((response) => {
-        console.log("response>>> ",response);
-
-        
-      }).catch((error => {
-        console.log("error>>> ", error);
-      }))
+        await ChatapiService.availableFlights(this.qParams)
+          .then((response) => {
+            console.log("response>>> ", response);
+          })
+          .catch((error) => {
+            console.log("error>>> ", error);
+          });
 
         this.messages.push({
           id: this.getMessageId(),
           isMine: false,
-          text:`${this.bookFlightForm.departure} to ${this.bookFlightForm.arrival} available flights on ${this.bookFlightForm.date}` ,
+          text: `${this.bookFlightForm.departure} to ${this.bookFlightForm.arrival} available flights on ${this.bookFlightForm.date}`,
           author: "Bot",
-          actions:[
-            {key:'A3456', label:'Airline: AIR Airlines - Flight Number: A3456 ', 'showBookButton':true},
-            {key:'J3456', label:'Airline: JET Airlines - Flight Number: J3456 ', 'showBookButton':true},
-          ]
-        })
+          actions: [
+            {
+              key: "A3456",
+              label: "Airline: AIR Airlines - Flight Number: A3456 ",
+              showBookButton: true,
+            },
+            {
+              key: "J3456",
+              label: "Airline: JET Airlines - Flight Number: J3456 ",
+              showBookButton: true,
+            },
+          ],
+        });
 
-        this.scrollToBotton()
+        this.scrollToBotton();
         this.currentState = this.botStatus.SHOWING_AVAILABLE_FLIGHTS;
-        }
-
+      }
     },
 
+    onActionSelectEvent(event, selectedAction) {
+      if (this.currentState == this.botStatus.HOME_PAGE) {
+        let action = this.botActions.find(
+          (ele) => ele.key == selectedAction.key
+        );
 
-    onActionSelectEvent(event, selectedAction){
+        console.log("action: ", action);
 
-      if(this.currentState == this.botStatus.HOME_PAGE){
-
-        let action =  this.botActions.find(ele=> ele.key == selectedAction.key)
-
-        console.log("action: ", action)
-
-        if(!action){
+        if (!action) {
           this.messages.push({
-          id: this.getMessageId(),
-          isMine: false,
-          text:'Please select valid option' ,
-          author: "Bot",
-          actions :this.botActions
-        })
-        this.scrollToBotton()      
-        }
-
-        else{
-
-        if(action.key == 'a'){
+            id: this.getMessageId(),
+            isMine: false,
+            text: "Please select valid option",
+            author: "Bot",
+            actions: this.botActions,
+          });
+          this.scrollToBotton();
+        } else {
+          if (action.key == "a") {
+            this.messages.push({
+              id: this.getMessageId(),
+              isMine: false,
+              text: "Book a Flight - Please fill in the details requested below",
+              author: "Bot",
+            });
 
             this.messages.push({
-            id: this.getMessageId(),
-            isMine: false,
-            text:'Book a Flight - Please fill in the details requested below' ,
-            author: "Bot",
-          })
+              id: this.getMessageId(),
+              isMine: false,
+              text: "Select Departure:",
+              author: "Bot",
+              actions: this.departureOptions,
+            });
 
-          this.messages.push({
-            id: this.getMessageId(),
-            isMine: false,
-            text:'Select Departure:' ,
-            author: "Bot",
-            actions :this.departureOptions
-          })
+            this.scrollToBotton();
+            this.currentState = this.botStatus.ASKING_BOOKING_DIPARTURE;
+          } else if (action.key == "b") {
+            window.open("https://airbotswana.co.bw/", "_blank");
+          } else if (action.key == "c") {
+            this.messages.push({
+              id: this.getMessageId(),
+              isMine: false,
+              text: "Your booked flights:",
+              author: "Bot",
+              actions: [
+                {
+                  key: "A3456",
+                  label: "Airline: AIR Airlines - Flight Number: A3456 ",
+                  showCheckStatusButton: true,
+                },
+                {
+                  key: "J3456",
+                  label: "Airline: JET Airlines - Flight Number: J3456 ",
+                  showCheckStatusButton: true,
+                },
+              ],
+            });
 
-          this.scrollToBotton()
-          this.currentState = this.botStatus.ASKING_BOOKING_DIPARTURE;
-         
-        
-        }
-        else if(action.key == 'b'){
-          window.open("https://airbotswana.co.bw/", '_blank');
-        }
+            this.scrollToBotton();
+            this.currentState = this.botStatus.SHOWING_LIST_FOR_FLIGHT_STATUS;
+          } else if (action.key == "d") {
+            window.open("https://airbotswana.co.bw/", "_blank");
+          } else if (action.key == "e") {
+            window.open("https://airbotswana.co.bw/", "_blank");
+          } else if (action.key == "f") {
+            this.messages.push({
+              id: this.getMessageId(),
+              isMine: false,
+              text: "",
+              author: "Bot",
+              actions: [
+                {
+                  key: "",
+                  label: "Talk to agent?",
+                  showTalkToAgentButton: true,
+                },
+              ],
+            });
+            this.currentState = this.botStatus.TALK_TO_AGENT;
 
-        else if(action.key == 'c'){
-
-          this.messages.push({
-          id: this.getMessageId(),
-          isMine: false,
-          text:'Your booked flights:' ,
-          author: "Bot",
-          actions:[
-            {key:'A3456', label:'Airline: AIR Airlines - Flight Number: A3456 ', 'showCheckStatusButton':true},
-            {key:'J3456', label:'Airline: JET Airlines - Flight Number: J3456 ', 'showCheckStatusButton':true},
-          ]
-          })
-
-          this.scrollToBotton()
-          this.currentState = this.botStatus.SHOWING_LIST_FOR_FLIGHT_STATUS;
-
+            this.scrollToBotton();
+          } else if (action.key == "g") {
+            window.open("https://airbotswana.co.bw/", "_blank");
           }
-
-        else if(action.key == 'd'){
-          window.open("https://airbotswana.co.bw/", '_blank');
         }
-        else if(action.key == 'e'){
-          window.open("https://airbotswana.co.bw/", '_blank');
-        }
-        else if(action.key == 'f'){
-
-          this.messages.push({
-            id: this.getMessageId(),
-            isMine: false,
-            text:'' ,
-            author: "Bot",
-            actions:[
-            {key:'', label:'Talk to agent?', 'showTalkToAgentButton':true},
-          ]
-          })
-          this.currentState = this.botStatus.TALK_TO_AGENT;
-
-          this.scrollToBotton()
-
-
-        }
-        else if(action.key == 'g'){
-          window.open("https://airbotswana.co.bw/", '_blank');
-        }
-        }
-
-        }
-
-       else if(this.currentState == this.botStatus.ASKING_BOOKING_DIPARTURE){
+      } else if (this.currentState == this.botStatus.ASKING_BOOKING_DIPARTURE) {
         this.bookFlightForm.departure = selectedAction.label;
         this.messages.push({
-            id: this.getMessageId(),
-            isMine: false,
-            text:'Select Arrival ?' ,
-            author: "Bot",
-            actions :this.arrivalOptions
-
-          })
-
-          this.scrollToBotton()
-          this.currentState = this.botStatus.ASKING_BOOKING_ARRIVAL;
-      }
-
-      else if(this.currentState == this.botStatus.ASKING_BOOKING_ARRIVAL){
-        this.bookFlightForm.arrival = selectedAction.label;
-
-          this.messages.push({
-            id: this.getMessageId(),
-            isMine: false,
-            text:'Enter Date (DD/MM/YYYY)' ,
-            author: "Bot",
-          })
-
-          this.scrollToBotton()
-          this.currentState = this.botStatus.ASKING_BOOKING_DATE;
-          }
-      
-      else if(this.currentState == this.botStatus.SHOWING_AVAILABLE_FLIGHTS){
-        window.open("https://airbotswana.co.bw/", '_blank');
-
-        this.messages.push({
-            id: this.getMessageId(),
-            isMine: false,
-            text:'Thank you for booking flight with us.' ,
-            author: "Bot",
-          })
-
-          this.scrollToBotton()
-
-          setTimeout(()=> {
-
-          this.messages.push({
           id: this.getMessageId(),
           isMine: false,
-          text:'Do you need more help? ' ,
+          text: "Select Arrival ?",
           author: "Bot",
-          actions :this.botActions
-          })
+          actions: this.arrivalOptions,
+        });
 
-          this.currentState = this.botStatus.HOME_PAGE
-          this.scrollToBotton()
-          }, 3000);
-
-
-      }
-
-      else if(this.currentState == this.botStatus.SHOWING_LIST_FOR_FLIGHT_STATUS){
+        this.scrollToBotton();
+        this.currentState = this.botStatus.ASKING_BOOKING_ARRIVAL;
+      } else if (this.currentState == this.botStatus.ASKING_BOOKING_ARRIVAL) {
+        this.bookFlightForm.arrival = selectedAction.label;
 
         this.messages.push({
+          id: this.getMessageId(),
+          isMine: false,
+          text: "Enter Date (DD/MM/YYYY)",
+          author: "Bot",
+        });
+
+        this.scrollToBotton();
+        this.currentState = this.botStatus.ASKING_BOOKING_DATE;
+      } else if (
+        this.currentState == this.botStatus.SHOWING_AVAILABLE_FLIGHTS
+      ) {
+        window.open("https://airbotswana.co.bw/", "_blank");
+
+        this.messages.push({
+          id: this.getMessageId(),
+          isMine: false,
+          text: "Thank you for booking flight with us.",
+          author: "Bot",
+        });
+
+        this.scrollToBotton();
+
+        setTimeout(() => {
+          this.messages.push({
             id: this.getMessageId(),
             isMine: false,
-            text:'Flight # 1234 from Gaborone to Francistown is on time' ,
+            text: "Do you need more help? ",
             author: "Bot",
-          })
+            actions: this.botActions,
+          });
 
-          this.scrollToBotton()
-
-          setTimeout(()=> {
-
-            this.messages.push({
-            id: this.getMessageId(),
-            isMine: false,
-            text:'Do you need more help? ' ,
-            author: "Bot",
-            actions :this.botActions
-          })
-
-          this.currentState = this.botStatus.HOME_PAGE
-          this.scrollToBotton()
+          this.currentState = this.botStatus.HOME_PAGE;
+          this.scrollToBotton();
         }, 3000);
+      } else if (
+        this.currentState == this.botStatus.SHOWING_LIST_FOR_FLIGHT_STATUS
+      ) {
+        this.messages.push({
+          id: this.getMessageId(),
+          isMine: false,
+          text: "Flight # 1234 from Gaborone to Francistown is on time",
+          author: "Bot",
+        });
 
+        this.scrollToBotton();
 
+        setTimeout(() => {
+          this.messages.push({
+            id: this.getMessageId(),
+            isMine: false,
+            text: "Do you need more help? ",
+            author: "Bot",
+            actions: this.botActions,
+          });
+
+          this.currentState = this.botStatus.HOME_PAGE;
+          this.scrollToBotton();
+        }, 3000);
+      } else if (this.currentState == this.botStatus.TALK_TO_AGENT) {
+        window.open("https://airbotswana.co.bw/", "_blank");
+
+        setTimeout(() => {
+          this.messages.push({
+            id: this.getMessageId(),
+            isMine: false,
+            text: "Do you need more help? ",
+            author: "Bot",
+            actions: this.botActions,
+          });
+
+          this.currentState = this.botStatus.HOME_PAGE;
+          this.scrollToBotton();
+        }, 3000);
       }
-
-
-      else if(this.currentState == this.botStatus.TALK_TO_AGENT){
-
-        window.open("https://airbotswana.co.bw/", '_blank');
-
-          setTimeout(()=> {
-
-            this.messages.push({
-            id: this.getMessageId(),
-            isMine: false,
-            text:'Do you need more help? ' ,
-            author: "Bot",
-            actions :this.botActions
-          })
-
-          this.currentState = this.botStatus.HOME_PAGE
-          this.scrollToBotton()
-        }, 3000);
-
-
-        }
-    }
-
-
-  }
-}
+    },
+  },
+};
 </script>
 
 <style>
 @font-face {
-  font-family: 'Georama';
-  src: url('./assets/Georama.ttf');
+  font-family: "Georama";
+  src: url("./assets/Georama.ttf");
 }
 
 @font-face {
-  font-family: 'Georama';
-  src: url('./assets/Georama.ttf');
+  font-family: "Georama";
+  src: url("./assets/Georama.ttf");
   font-weight: bold;
 }
 
@@ -433,7 +396,7 @@ export default {
 }
 
 html {
-  font-family: 'Georama', sans-serif;
+  font-family: "Georama", sans-serif;
 }
 
 body {
@@ -460,12 +423,17 @@ input {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  max-width: 40%;
 }
 
 .messages {
   flex-grow: 1;
   overflow: auto;
   padding: 1rem;
+  background: url(../public/flight-bg.jpg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .message + .message {
