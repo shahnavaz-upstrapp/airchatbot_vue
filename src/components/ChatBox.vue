@@ -1,34 +1,27 @@
 <template>
-  <form class='chat-box' @submit='onSubmit($event)'>
-    <input
-        v-model='text'
-        placeholder='Write a message'
-        type='text'
-    />
-    <button :disabled='text === ""'>Send</button>
+  <form class="chat-box" @submit="onSubmit($event)">
+    <input v-model="text" placeholder="Write a message" type="text" />
+    <button :disabled="text === ''" class="btn">Send</button>
   </form>
 </template>
 
 <script>
 export default {
-  name: 'ChatBox',
+  name: "ChatBox",
   data: () => ({
-
     // To keep the state of the input content
-    text: ''
+    text: "",
   }),
   methods: {
-
     // We will call this when the form is submitted
     onSubmit(event) {
-
       // This fires an event which we will handle
       // in the parent component
       this.$emit("submit", event, this.text);
-      this.text = '';
-    }
-  }
-}
+      this.text = "";
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -42,6 +35,9 @@ input {
   flex-grow: 1;
 }
 
+.btn {
+  background: rgb(60, 180, 229);
+}
 button:disabled {
   opacity: 0.5;
 }
